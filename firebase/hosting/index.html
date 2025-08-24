@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Analytics</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Theme color for browser UI -->
+    <meta name="theme-color" content="#2c3e50">
+
+    <!-- Firebase SDK -->
+    <!-- Replace with your project's specific SDK script from the Firebase console -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Meeting Analytics</h1>
+    </header>
+
+    <main id="app">
+        <div id="loader">Loading meetings...</div>
+        <ul id="meetings-list">
+            <!-- Meeting items will be rendered here by JavaScript -->
+        </ul>
+    </main>
+
+    <!-- Main application script -->
+    <script src="/js/app.js"></script>
+</body>
+</html>

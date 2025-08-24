@@ -1,0 +1,15 @@
+# Core libraries for data processing and vector search
+chromadb==0.5.3
+sentence-transformers==3.0.1
+# sentence-transformers requires a backend, torch is the most common.
+torch==2.3.1
+
+# For Google Cloud Firestore
+firebase-admin==6.5.0
+
+# For Notion API
+notion-client==2.0.0
+
+# For potential future extensions, good to have:
+# pandas==2.2.2
+# numpy==1.26.4
