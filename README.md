@@ -2,82 +2,43 @@
 
 ## 概要
 
-**プロジェクト名:** PixelRecordings-Analytics
+**PixelRecordings-Analytics** は、Google Pixel レコーダーで録音された会議音声を活用し、横断的な分析を可能にするためのデータパイプライン・プロジェクトです。
 
-**目的:** Pixel（Google Pixel レコーダー）で録音された会議音声をローカルで文字起こし（Whisper）、埋め込み生成（sentence-transformers）、ベクトル保存（Chroma / Qdrant）し、メタデータ／要約を Firestore / Notion に同期して、Firebase Hosting 上の PWA でスマホから閲覧できる仕組みを構築する。
+音声の文字起こしやベクトル化といった重い処理はプライバシーを重視してローカルで完結させ、メタデータや要約をクラウドに同期することで、スマートフォンなどから手軽に内容を確認できる仕組みの構築を目指します。
 
-**設計方針（MVP）**
+## ✨ 主な機能
 
-* 個人利用を前提に『無料枠＋ローカル処理』で実装
-* 音声の文字起こしと埋め込みはローカルで完結（プライバシー重視）
-* メタ・要約は Firestore / Notion に保存してスマホで確認
-* 開発は GitHub で管理、Jules に Issue を割り当てる
+- **ローカル処理パイプライン**: `rclone`でのファイル同期、`whisper.cpp`での文字起こし、`sentence-transformers`でのベクトル化、`ChromaDB`への登録までの一連の処理をスクリプトで実行。
+- **検索API**: `FastAPI`で構築されたローカルAPIを通じて、ベクトル検索（類似文章検索）が可能。
+- **クラウド連携**: 会議のメタデータや要約を`Google Firestore`や`Notion`に同期。
+- **モバイル対応UI**: `Firebase Hosting`でホストされたPWA（Progressive Web App）で、どこからでも会議の要約を閲覧。
 
----
+## 📖 ドキュメント
 
-## 主要コンポーネント
+このプロジェクトを最大限に活用するために、以下のドキュメントを参照してください。
 
-**ローカル (Windows)**
+| ドキュメント                                       | 説明                                                                 |
+| -------------------------------------------------- | -------------------------------------------------------------------- |
+| 🚀 **[セットアップガイド](./docs/setup.md)**       | **最初にここから！** 開発環境をゼロから構築するための手順。          |
+| 🏃 **[運用マニュアル (Runbook)](./docs/runbook.md)** | 日常的に新しい会議データを処理するためのステップバイステップの手順。 |
+| 🧪 **[テスト実行ガイド](./docs/testing.md)**       | LintやE2Eテストなど、プロジェクトの品質を保つためのテスト実行方法。  |
+| ☁️ **[rclone セットアップ](./docs/rclone_setup.md)** | Google Driveと同期するための`rclone`の具体的な設定方法。             |
+| 📓 **[Notionスキーマ定義](./notion/notion_schema.md)** | Notionで利用を推奨するデータベースの構成案。                         |
 
-* rclone: Google Drive ↔ ローカル同期
-* Whisper / whisper.cpp: 文字起こし
-* sentence-transformers: 埋め込み生成
-* Chroma（または Qdrant via Docker）: ベクトルストア
-* FastAPI: ローカル検索 API
+## 🛠️ 主要コンポーネント
 
-**クラウド（無料枠想定）**
+### ローカル (Windows/macOS/Linux)
+- `rclone`: Google Drive ↔ ローカル同期
+- `whisper.cpp`: 高速な文字起こし
+- `sentence-transformers`: テキストの埋め込みベクトル生成
+- `ChromaDB`: ベクトルストア
+- `FastAPI`: ローカル検索API
 
-* Google Drive: ストレージ（既存の15GB）
-* Firebase Hosting: PWA 配信
-* Firestore: 会議メタ・要約の格納
-* Notion: 課題・振り返り管理（無料プラン）
-
----
-
-## セットアップ（開発者向け簡易）
-
-### 前提
-
-* Windows 10/11（WSL 可）
-* Python 3.9+（venv 推奨）
-* rclone インストール済み
-* whisper.cpp のビルドが可能（CPU モードを想定）
-* GitHub アカウント
-* Firebase プロジェクト（無料枠）
-* Notion API トークン
-
-### 初期手順（ローカル）
-
-1. リポジトリをクローン
-   ```bash
-   git clone <repo-url>
-   cd PixelRecordings-Analytics
-   python -m venv .venv
-   source .venv/bin/activate  # Windows: .venv\Scripts\activate
-   pip install -r services/api/requirements.txt
-   ```
-2. rclone remote の設定（`rclone config`）で `gdrive` を作成
-3. `scripts/sync_drive.ps1`（Windows）を編集し、remote/local パスを合わせて実行
-4. whisper.cpp をビルドし、`scripts/transcribe_whisper.sh` を参考に文字起こし実行
-5. `python scripts/embed_and_upsert.py local_data/transcripts/meetingA.json` で Chroma に登録
-6. `python scripts/sync_to_firestore.py local_data/transcripts/meetingA.json` で Firestore にメタ同期
-7. `firebase deploy`（hosting）で PWA をデプロイ
+### クラウド（無料枠想定）
+- `Google Drive`: 音声ファイルのストレージ
+- `Firebase Hosting`: PWAの配信
+- `Firestore`: 会議メタデータ・要約の格納
+- `Notion`: 課題・振り返り管理
 
 ---
-
-## 運用フロー（短期/手動）
-
-1. Pixel → Google Drive（自動アップロード）
-2. `scripts/sync_drive.ps1` を手動実行（またはタスクスケジューラ）
-3. `scripts/transcribe_whisper.sh` を実行 → transcripts 出力
-4. `scripts/embed_and_upsert.py` を実行 → Chroma に登録
-5. `scripts/sync_to_firestore.py` を実行 → Firestore に要約/メタ登録
-6. Firebase UI で確認
-
----
-
-## 注意点
-
-* 機密データはローカル処理を優先
-* Firebase の書き込み/読み取りルールを適切に設定
-* 大量データは Firestore にベクトルを保存しない（コスト増）
+*This project is currently under development.*

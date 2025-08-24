@@ -49,11 +49,8 @@ def upsert_meeting_transcript(transcript_path: Path):
         exit(1)
 
     # 2. Initialize the ChromaDB client
-    # The Settings object ensures data is saved to disk.
-    client = chromadb.Client(Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory=str(persist_directory)
-    ))
+    # The new API for persistent clients
+    client = chromadb.PersistentClient(path=str(persist_directory))
     collection = client.get_or_create_collection(name=COLLECTION_NAME)
 
     # 3. Load the transcript JSON file

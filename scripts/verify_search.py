@@ -48,10 +48,7 @@ def search_collection(query: str, top_k: int = 5):
         exit(1)
 
     # 2. Initialize the ChromaDB client
-    client = chromadb.Client(Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory=str(persist_directory)
-    ))
+    client = chromadb.PersistentClient(path=str(persist_directory))
 
     try:
         collection = client.get_collection(name=COLLECTION_NAME)

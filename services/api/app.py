@@ -57,11 +57,8 @@ async def lifespan(app: FastAPI):
         # Initialize ChromaDB client
         logger.info(f"Initializing ChromaDB client from: {persist_directory}...")
         try:
-            client = chromadb.Client(Settings(
-                chroma_db_impl="duckdb+parquet",
-                persist_directory=str(persist_directory)
-            ))
-            app.state.collection = client.get_collection(name=COLLECTION_NAME)
+            client = chromadb.PersistentClient(path=str(persist_directory))
+            app.state.collection = client.get_or_create_collection(name=COLLECTION_NAME)
             logger.info(f"Successfully connected to collection '{COLLECTION_NAME}'.")
         except Exception as e:
             logger.error(f"Failed to connect to ChromaDB collection: {e}")
