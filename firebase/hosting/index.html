@@ -22,9 +22,14 @@
 <body>
     <header>
         <h1>Meeting Analytics</h1>
+        <form id="search-form">
+            <input type="search" id="search-input" placeholder="Search all transcripts..." required>
+            <button type="submit">Search</button>
+        </form>
     </header>
 
     <main id="app">
+        <div id="results-header"></div>
         <div id="loader">Loading meetings...</div>
         <ul id="meetings-list">
             <!-- Meeting items will be rendered here by JavaScript -->
