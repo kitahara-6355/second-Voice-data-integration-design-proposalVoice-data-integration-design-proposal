@@ -22,6 +22,7 @@
 | 🚀 **[セットアップガイド](./docs/setup.md)**       | **最初にここから！** 開発環境をゼロから構築するための手順。          |
 | 🏃 **[運用マニュアル (Runbook)](./docs/runbook.md)** | 日常的に新しい会議データを処理するためのステップバイステップの手順。 |
 | 🧪 **[テスト実行ガイド](./docs/testing.md)**       | LintやE2Eテストなど、プロジェクトの品質を保つためのテスト実行方法。  |
+| 🔗 **[外部サービス連携](./docs/integrations.md)**   | Slack通知など、外部サービスとの連携設定。                            |
 | ☁️ **[rclone セットアップ](./docs/rclone_setup.md)** | Google Driveと同期するための`rclone`の具体的な設定方法。             |
 | 📓 **[Notionスキーマ定義](./notion/notion_schema.md)** | Notionで利用を推奨するデータベースの構成案。                         |
 

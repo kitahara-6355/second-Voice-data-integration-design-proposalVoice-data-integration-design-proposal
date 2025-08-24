@@ -54,3 +54,18 @@ jobs:
           path: pytest-report.xml
           reporter: pytest
           fail-on-error: 'false'
+
+  notify:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always() # Always run this step regardless of job results
+    steps:
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "CI/CD結果: ${{ job.status }}\nリポジトリ: ${{ github.repository }}\nブランチ: ${{ github.ref_name }}\n実行URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
