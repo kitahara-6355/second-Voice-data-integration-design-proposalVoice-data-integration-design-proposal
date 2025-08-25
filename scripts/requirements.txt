@@ -10,6 +10,9 @@ firebase-admin==6.5.0
 # For Notion API
 notion-client==2.0.0
 
+# For sending HTTP requests (e.g., to Slack)
+requests==2.32.3
+
 # For potential future extensions, good to have:
 # pandas==2.2.2
 # numpy==1.26.4
