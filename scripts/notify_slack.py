@@ -12,63 +12,34 @@ except ImportError:
 def send_slack_notification(message: str, webhook_url: str):
     """
     Sends a formatted notification to a Slack webhook URL.
-
-    Args:
-        message: The main message content to send.
-        webhook_url: The Slack Incoming Webhook URL.
     """
     try:
-        # Using Slack's Block Kit for better formatting
         payload = {
             "blocks": [
-                {
-                    "type": "header",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "🚨 Pipeline Alert",
-                        "emoji": True
-                    }
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": message
-                    }
-                }
+                {"type": "header", "text": {"type": "plain_text", "text": "🚨 Pipeline Alert", "emoji": True}},
+                {"type": "section", "text": {"type": "mrkdwn", "text": message}}
             ]
         }
-
         response = requests.post(webhook_url, data=json.dumps(payload), headers={'Content-Type': 'application/json'})
-
-        # Raise an exception if the request was not successful
         response.raise_for_status()
-
         print("Successfully sent notification to Slack.")
-
     except requests.exceptions.RequestException as e:
         print(f"Error sending notification to Slack: {e}", file=sys.stderr)
-        # We don't exit with 1 here, as failing to notify shouldn't halt the main script.
     except Exception as e:
         print(f"An unexpected error occurred: {e}", file=sys.stderr)
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Send a notification message to a Slack channel."
-    )
-    parser.add_argument(
-        "message",
-        type=str,
-        help="The message to be sent. Supports Slack's mrkdwn."
-    )
+def main():
+    """
+    Main function to parse arguments and send notification.
+    """
+    parser = argparse.ArgumentParser(description="Send a notification message to a Slack channel.")
+    parser.add_argument("message", type=str, help="The message to be sent. Supports Slack's mrkdwn.")
     args = parser.parse_args()
 
     webhook_url = os.getenv("SLACK_WEBHOOK_URL")
 
     if not webhook_url:
         print("Warning: SLACK_WEBHOOK_URL environment variable is not set. Cannot send notification.", file=sys.stderr)
-        # Exit gracefully, as this is a configuration issue on the user's end.
         sys.exit(0)
 
     if not args.message:
@@ -76,3 +47,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     send_slack_notification(args.message, webhook_url)
+    sys.exit(0) # Explicitly exit with success code
+
+if __name__ == "__main__":
+    main()

@@ -32,7 +32,6 @@ jobs:
       - name: Run Unit Tests with Pytest
         id: pytest
         run: pytest --junitxml=pytest-report.xml
-        continue-on-error: true
 
       - name: Run CI Integration Test
         run: |
